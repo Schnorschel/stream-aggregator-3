@@ -1,0 +1,92 @@
+[
+  {
+    "eventId": 0,
+    "streamId": 0,
+    "event": "person_new",
+    "data": { "name": "Joe Bloggs" }
+  },
+  {
+    "eventId": 1,
+    "streamId": 1,
+    "event": "person_new",
+    "data": { "name": "Belva Poppins" }
+  },
+  {
+    "eventId": 2,
+    "streamId": 2,
+    "event": "person_new",
+    "data": { "name": "Gal Person" }
+  },
+  {
+    "eventId": 3,
+    "streamId": 3,
+    "event": "person_new",
+    "data": { "name": "Gu Persona" }
+  },
+  {
+    "eventId": 4,
+    "streamId": 4,
+    "event": "course_new",
+    "data": { "name": "Ice Cream Eating" }
+  },
+  {
+    "eventId": 5,
+    "streamId": 5,
+    "event": "course_new",
+    "data": { "name": "Popcorn Poppping" }
+  },
+  {
+    "eventId": 6,
+    "streamId": 4,
+    "event": "course_enrolled",
+    "data": { "personId": 1 }
+  },
+  {
+    "eventId": 7,
+    "streamId": 4,
+    "event": "course_enrolled",
+    "data": { "personId": 2 }
+  },
+  {
+    "eventId": 8,
+    "streamId": 4,
+    "event": "course_enrolled",
+    "data": { "personId": 3 }
+  },
+  {
+    "eventId": 9,
+    "streamId": 5,
+    "event": "course_enrolled",
+    "data": { "personId": 1 }
+  },
+  {
+    "eventId": 10,
+    "streamId": 5,
+    "event": "course_enrolled",
+    "data": { "personId": 3 }
+  },
+  {
+    "eventId": 11,
+    "streamId": 4,
+    "event": "course_disenrolled",
+    "data": { "personId": 3 }
+  },
+  {
+    "eventId": 12,
+    "streamId": 5,
+    "event": "course_renamed",
+    "data": { "name": "Popcorn Popping" }
+  },
+  {
+    "eventId": 13,
+    "streamId": 3,
+    "event": "person_renamed",
+    "data": { "name": "Guy Persona" }
+  },
+  {
+    "eventId": 14,
+    "streamId": 3,
+    "event": "person_renamed",
+    "data": { "name": "Guy Person" }
+  }
+]
