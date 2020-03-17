@@ -55,7 +55,7 @@ namespace stream_aggregator_3
               Db.Persons.Add(newPerson);
               Db.SaveChanges();
               // Log that "person_new" event was successfully processed
-              AddToLog(EvIt.EventId, EvIt.StreamId, $"Successfully processed event '{EvIt.Event}' to add person '{EvIt.data.Name}'.");
+              AddToLog(EvIt.EventId, EvIt.StreamId, $"Successfully processed event '{EvIt.Event}' to add person '{newPerson.Name}' with Id={newPerson.PersonId}.");
             }
             else
             {
@@ -260,6 +260,30 @@ namespace stream_aggregator_3
       Console.WriteLine($"EventId: {EventId}. StreamId: {StreamId}. [{Description}]");
     }
 
+    // Validation function to return a person's name given a numeric Id
+    public static string GetPersonNameById(int Id)
+    {
+      var Db = new StreamAggregatorContext();
+      var result = Db.Persons.FirstOrDefault(p => p.PersonId == Id);
+      return (result == null ? "" : result.Name);
+    }
+
+    // Validation function to return a course's name given a numeric Id
+    public static string GetCourseNameById(int Id)
+    {
+      var Db = new StreamAggregatorContext();
+      var result = Db.Courses.FirstOrDefault(p => p.CourseId == Id);
+      return (result == null ? "" : result.Name);
+    }
+
+    // Validation function to return a boolean based on whether an enrollment by the given CourseId and PersonId exists
+    public static bool EnrollmentExistsByIds(int CourseId, int PersonId)
+    {
+      var Db = new StreamAggregatorContext();
+      return (Db.CoursesEnrolled.Any(ce => ce.CourseId == CourseId && ce.PersonId == PersonId));
+    }
+
+
     static void Main(string[] args)
     // - Import the event stream from external JSON file into local List object
     // - Process the event stream in chronological order and - after successful validation 
@@ -317,5 +341,7 @@ namespace stream_aggregator_3
 
       // Console.WriteLine(modelJson);
     }
+
   }
+
 }
