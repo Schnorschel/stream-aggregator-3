@@ -11,18 +11,6 @@ namespace stream_aggregator_3
 {
   public class Program
   {
-    // private readonly StreamAggregatorContext context;
-
-    // public Program(StreamAggregatorContext _context)
-    // {
-    //   this.context = _context;
-    // }
-
-    // static StreamAggregatorContext Db = new StreamAggregatorContext();
-    // static List<Person> Persons = new List<Person>();
-    // static List<Course> Courses = new List<Course>();
-    // static List<CourseEnrolled> CoursesEnrolled = new List<CourseEnrolled>();
-
     // Process all events in chronological order
     static void ConsumeEvents(IEnumerable<EventStream> Jmodel)
     {
@@ -32,6 +20,7 @@ namespace stream_aggregator_3
       }
     }
 
+    // Process/consume an event given in EvIt according to its event name, stream id and other arguments
     static void ConsumeEvent(EventStream EvIt)
     {
       var Db = new StreamAggregatorContext();
@@ -51,7 +40,7 @@ namespace stream_aggregator_3
               var newPerson = new Person();
               newPerson.PersonId = EvIt.StreamId;
               newPerson.Name = EvIt.data.Name;
-              // ..and add it to List Collection Persons
+              // ..and add it to the data structure Persons
               Db.Persons.Add(newPerson);
               Db.SaveChanges();
               // Log that "person_new" event was successfully processed
@@ -79,9 +68,11 @@ namespace stream_aggregator_3
             // add it to (local) data structure
             if (EvIt.data.Name != "")
             {
+              // Instantiate a new Course object, populate its properties..
               var newCourse = new Course();
               newCourse.CourseId = EvIt.StreamId;
               newCourse.Name = EvIt.data.Name;
+              // ..and add it to the data structure Courses
               Db.Courses.Add(newCourse);
               Db.SaveChanges();
               // Log that "course_new" event was successfully processed
@@ -101,7 +92,7 @@ namespace stream_aggregator_3
           break;
         case "course_enrolled":
           // Enroll existing person into existing course
-          // Check that course and person exist
+          // Check whether course and person exist
           existingCourse = Db.Courses.FirstOrDefault(c => c.CourseId == EvIt.StreamId);
           if (existingCourse != null)
           {
@@ -115,9 +106,7 @@ namespace stream_aggregator_3
                 // Create a new CourseEnrollment object, populate all properties and save to data structure
                 var newCourseEnrolled = new CourseEnrolled();
                 newCourseEnrolled.CourseId = EvIt.StreamId;
-                // newCourseEnrolled.CourseName = existingCourse.Name;
                 newCourseEnrolled.PersonId = (int)EvIt.data.PersonId;
-                // newCourseEnrolled.Persons = existingPerson;
                 Db.CoursesEnrolled.Add(newCourseEnrolled);
                 Db.SaveChanges();
                 // Log that "course_enrolled" event was successfully processed
@@ -143,12 +132,13 @@ namespace stream_aggregator_3
           break;
         case "course_renamed":
           // Rename existing course
-          // Ensure course to rename exists
+          // First, ensure course to rename exists
           existingCourse = Db.Courses.FirstOrDefault(c => c.CourseId == EvIt.StreamId);
           if (existingCourse != null)
           {
             if (EvIt.data.Name != null)
             {
+              // Course exists and can be renamed. Save new name to data structure.
               string existingCourseName = existingCourse.Name;
               existingCourse.Name = EvIt.data.Name;
               Db.SaveChanges();
@@ -173,6 +163,7 @@ namespace stream_aggregator_3
           var existingCourseEnrolled2 = Db.CoursesEnrolled.FirstOrDefault(ce => ce.CourseId == EvIt.StreamId && ce.PersonId == EvIt.data.PersonId);
           if (existingCourseEnrolled2 != null)
           {
+            // Remove enrollment record from database
             Db.CoursesEnrolled.Remove(existingCourseEnrolled2);
             Db.SaveChanges();
             // Log that "course_disenrolled" event was successfully processed
@@ -186,10 +177,11 @@ namespace stream_aggregator_3
           break;
         case "person_renamed":
           // Rename existing person
-          // Ensure person exists, and new name has been provided; if so, overwrite name
+          // First, ensure person exists, and new name has been provided; if so, overwrite name
           existingPerson = Db.Persons.FirstOrDefault(p => p.PersonId == EvIt.StreamId);
           if (existingPerson != null && EvIt.data.Name != null && EvIt.data.Name != "")
           {
+            // Save new name and save data to data structure
             string existingPersonName = existingPerson.Name;
             existingPerson.Name = EvIt.data.Name;
             Db.SaveChanges();
@@ -209,6 +201,7 @@ namespace stream_aggregator_3
       }
     }
 
+    // Clean table CoursesEnrolled of all its records
     static void CleanTableCourseEnrolled()
     {
       var Db = new StreamAggregatorContext();
@@ -216,6 +209,7 @@ namespace stream_aggregator_3
       Db.SaveChanges();
     }
 
+    // Clean table Course of all its records
     static void CleanTableCourse()
     {
       var Db = new StreamAggregatorContext();
@@ -223,6 +217,7 @@ namespace stream_aggregator_3
       Db.SaveChanges();
     }
 
+    // Clean table Person of all its records
     static void CleanTablePerson()
     {
       var Db = new StreamAggregatorContext();
@@ -230,6 +225,7 @@ namespace stream_aggregator_3
       Db.SaveChanges();
     }
 
+    // Clean all tables of all their records
     static void CleanAllTables()
     {
       CleanTableCourseEnrolled();
@@ -237,8 +233,8 @@ namespace stream_aggregator_3
       CleanTablePerson();
     }
 
+    // Basic Output routine to show select data of JSON object (used for testing only)
     static void DisplayEventStream(IEnumerable<EventStream> Jmodel)
-    // Basic Output routine to show select data of JSON object (used for testing)
     {
       foreach (var evs in Jmodel.OrderBy(ev => ev.EventId))
       {
@@ -255,10 +251,13 @@ namespace stream_aggregator_3
       }
     }
 
+    // Create log entry. Currently as WriteLine. This could go to a table too to keep a persistant audit history.
     static void AddToLog(int EventId, int StreamId, string Description)
     {
       Console.WriteLine($"EventId: {EventId}. StreamId: {StreamId}. [{Description}]");
     }
+
+    // The following validation functions are used for testing
 
     // Validation function to return a person's name given a numeric Id
     public static string GetPersonNameById(int Id)
@@ -283,11 +282,11 @@ namespace stream_aggregator_3
       return (Db.CoursesEnrolled.Any(ce => ce.CourseId == CourseId && ce.PersonId == PersonId));
     }
 
-
-    static void Main(string[] args)
     // - Import the event stream from external JSON file into local List object
     // - Process the event stream in chronological order and - after successful validation 
-    //   of each event - write data to local objects 
+    //   of each event - write data to local data structures 
+    // - Finally, output the contents of all data structures
+    static void Main(string[] args)
     {
       // Specify options for built-in JSON serializer
       var options = new JsonSerializerOptions
@@ -306,23 +305,23 @@ namespace stream_aggregator_3
 
       // Import the event stream from external JSON file into local string
       var jsonString = File.ReadAllText("events.json");
-      // This statement failed with given JSON file structure, so json.net was utilized instead
+      // This statement failed with given JSON file structure, so json.net (in next statement) was utilized instead
       // var jsonModel = JsonSerializer.Deserialize<EventStream>(jsonString, options);
       // Port imported JSON string data into List object
       var jsonModel = JsonConvert.DeserializeObject<List<EventStream>>(jsonString, settings);
 
-      // Display the events to be processed
+      // Display the events to be processed (only used initially for testing)
       // DisplayEventStream(jsonModel);
 
       // Clear all tables of their contents
       CleanAllTables();
 
-      // Process events
+      // Process all events in chronological order by storing their data in data structures
       ConsumeEvents(jsonModel);
 
       Console.WriteLine();
 
-      // var modelJson = System.Text.Json.JsonSerializer.Serialize(jsonModel, options);
+      // Output the data stored
       Console.WriteLine("Course:");
       Console.WriteLine("-------");
       var DbC = new StreamAggregatorContext();
@@ -335,7 +334,6 @@ namespace stream_aggregator_3
       Console.WriteLine();
       Console.WriteLine("Course Enrollment:");
       Console.WriteLine("------------------");
-      // Error: 'List<Course>' does not contain a definition for 'Include' and no accessible extension method 'Include' accepting a first argument of type 'List<Course>' could be found
       var DbC2 = new StreamAggregatorContext();
       Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(DbC2.Courses.Include(c => c.CoursesEnrolled).ThenInclude(ce => ce.Person).ToList(), options));
 
