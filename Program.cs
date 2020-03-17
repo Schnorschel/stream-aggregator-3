@@ -282,7 +282,7 @@ namespace stream_aggregator_3
       return (Db.CoursesEnrolled.Any(ce => ce.CourseId == CourseId && ce.PersonId == PersonId));
     }
 
-    // - Import the event stream from external JSON file into local List object
+    // - Import the event stream from external JSON file into local data structure
     // - Process the event stream in chronological order and - after successful validation 
     //   of each event - write data to local data structures 
     // - Finally, output the contents of all data structures
