@@ -251,7 +251,7 @@ namespace stream_aggregator_3
       }
     }
 
-    // Create log entry. Currently as WriteLine. This could go to a table too to keep a persistant audit history.
+    // Create log entry. Currently as WriteLine. This could go to a table too to keep a persistent audit history.
     static void AddToLog(int EventId, int StreamId, string Description)
     {
       Console.WriteLine($"EventId: {EventId}. StreamId: {StreamId}. [{Description}]");
